@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Sun, Cloud, CloudRain, Wind, MapPin, Sliders, Clock, Umbrella, Calendar, Thermometer } from 'lucide-react'
+import { Sun, Cloud, CloudRain, Wind, MapPin, Newspaper, Clock, Umbrella, Calendar, Thermometer } from 'lucide-react'
 import { Button } from "./components/ui/button"
 
 export default function LandingPage() {
@@ -69,11 +69,11 @@ export default function LandingPage() {
 
       <section className="bg-white py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-blue-800">Powerful Features</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-blue-800">Efficient Features</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { icon: <MapPin className="w-12 h-12 text-red-500" />, title: "Auto-Location", description: "Get instant weather updates based on your current location." },
-              { icon: <Sliders className="w-12 h-12 text-purple-500" />, title: "Customizable Dashboard", description: "Tailor your weather view with the information that matters most to you." },
+              { icon: <Newspaper className="w-12 h-12 text-purple-500" />, title: "Top Weather Stories", description: "Stay informed with the latest weather-related news for your area." },
               { icon: <Clock className="w-12 h-12 text-green-500" />, title: "Hourly Forecasts", description: "Plan your day with detailed hour-by-hour weather predictions." },
               { icon: <Calendar className="w-12 h-12 text-blue-500" />, title: "Weekly Forecasts", description: "Stay prepared with accurate 7-day weather outlooks." },
               { icon: <Umbrella className="w-12 h-12 text-yellow-500" />, title: "Weather-Based Recommendations", description: "Receive smart suggestions based on current and upcoming weather conditions." },

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Button } from "./components/ui/button"
 import { Input } from "./components/ui/input"
-import { Sun, Cloud, CloudRain, Wind, Thermometer, Droplets, MapPin } from 'lucide-react'
+import { Sun, Cloud, CloudRain, Wind, MapPin } from 'lucide-react'
 import axios from 'axios'
 
 export default function Dashboard() {
   const [city, setCity] = useState('')
   const [weatherData, setWeatherData] = useState(null)
   const [newsData, setNewsData] = useState([])
-  const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
@@ -20,11 +19,11 @@ export default function Dashboard() {
     if (lat && lon) {
       fetchWeatherData(lat, lon)
     }
-  }, [location])
+  }, [location.search])
 
   const fetchWeatherData = async (lat, lon) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/weather?lat=${lat}&lon=${lon}`)
+      const response = await axios.get(`http://localhost:5004/api/weather?lat=${lat}&lon=${lon}`)
       setWeatherData(response.data)
       setCity(response.data.location.name)
       fetchNewsData(response.data.location.name)
@@ -35,7 +34,7 @@ export default function Dashboard() {
 
   const fetchNewsData = async (city) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/news?city=${city}`)
+      const response = await axios.get(`http://localhost:5004/api/news?city=${city}`)
       setNewsData(response.data.articles.slice(0, 5))
     } catch (error) {
       console.error('Error fetching news data:', error)
@@ -45,7 +44,7 @@ export default function Dashboard() {
   const handleCityChange = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=YOUR_API_KEY&q=${city}&days=7&aqi=no&alerts=no`)
+      const response = await axios.get(`http://localhost:5004/api/weather?q=${city}`)
       setWeatherData(response.data)
       fetchNewsData(city)
     } catch (error) {
@@ -164,15 +163,19 @@ export default function Dashboard() {
 
         <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-4">Top Weather Stories</h2>
-          <ul className="space-y-2">
-            {newsData.map((story, index) => (
-              <li key={index}>
-                <a href={story.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  {story.title}
-                </a>
-              </li>
-            ))}
-          </ul>
+          {newsData.length > 0 ? (
+            <ul className="space-y-2">
+              {newsData.map((story, index) => (
+                <li key={index}>
+                  <a href={story.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    {story.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No weather stories available at the moment.</p>
+          )}
         </div>
       </main>
     </div>
