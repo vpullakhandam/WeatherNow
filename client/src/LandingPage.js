@@ -17,6 +17,7 @@ import {
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LandingPage() {
   const [currentWeather, setCurrentWeather] = useState("sunny");
@@ -123,7 +124,7 @@ export default function LandingPage() {
           className="text-center"
         >
           <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-blue-800">
-            WeatherNow
+            WeatherNow App
           </h1>
           <p className="text-lg sm:text-xl mb-8 text-blue-600">
             Your personalized weather companion with real-time updates.
