@@ -35,7 +35,7 @@ export default function Dashboard() {
   const fetchWeatherData = async (lat, lon, q) => {
     setIsLoading(true);
     try {
-      let url = "http://localhost:5004/api/weather?";
+      let url = "https://weathernow-backend.vercel.app/api/weather?";
       if (lat && lon) {
         url += `lat=${lat}&lon=${lon}`;
       } else if (q) {
@@ -56,7 +56,9 @@ export default function Dashboard() {
   const fetchNewsData = async (city) => {
     try {
       const response = await axios.get(
-        `http://localhost:5004/api/news?city=${encodeURIComponent(city)}`
+        `https://weathernow-backend.vercel.app/api/news?city=${encodeURIComponent(
+          city
+        )}`
       );
       setNewsData(response.data.articles);
     } catch (error) {
