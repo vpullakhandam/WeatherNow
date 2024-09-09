@@ -8,7 +8,10 @@ const port = process.env.PORT || 5004;
 
 app.use(
   cors({
-    origin: "https://weathernow-frontend.vercel.app/",
+    origin: "https://weathernow-frontend.vercel.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
