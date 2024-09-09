@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
@@ -16,8 +16,23 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Use useCallback to memoize fetchWeatherData function
-  const fetchWeatherData = useCallback(async (lat, lon, q) => {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const lat = searchParams.get("lat");
+    const lon = searchParams.get("lon");
+    const q = searchParams.get("q");
+
+    if (lat && lon) {
+      fetchWeatherData(lat, lon);
+    } else if (q) {
+      fetchWeatherData(null, null, q);
+    } else {
+      setIsLoading(false);
+      toast.error("No location specified. Please enter a city name.");
+    }
+  }, [location.search]);
+
+  const fetchWeatherData = async (lat, lon, q) => {
     setIsLoading(true);
     try {
       let url = "http://localhost:5004/api/weather?";
@@ -36,7 +51,7 @@ export default function Dashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   const fetchNewsData = async (city) => {
     try {
@@ -49,22 +64,6 @@ export default function Dashboard() {
       toast.warn("Unable to fetch news stories at this time.");
     }
   };
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const lat = searchParams.get("lat");
-    const lon = searchParams.get("lon");
-    const q = searchParams.get("q");
-
-    if (lat && lon) {
-      fetchWeatherData(lat, lon);
-    } else if (q) {
-      fetchWeatherData(null, null, q);
-    } else {
-      setIsLoading(false);
-      toast.error("No location specified. Please enter a city name.");
-    }
-  }, [location.search, fetchWeatherData]);
 
   const handleCityChange = async (e) => {
     e.preventDefault();
@@ -232,14 +231,14 @@ export default function Dashboard() {
                   .slice(0, 8)
                   .map((hour, index) => (
                     <div key={index} className="text-center">
-                      <p className="text-lg font-semibold">
-                        {hour.time.split(" ")[1]}
+                      <p className="font-semibold">
+                        {new Date(hour.time).getHours()}:00
                       </p>
+                      {getWeatherIcon(hour.condition.text)}
                       <p>
                         {convertTemperature(hour.temp_f)}°
                         {isCelsius ? "C" : "F"}
                       </p>
-                      {getWeatherIcon(hour.condition.text)}
                     </div>
                   ))}
               </div>
@@ -247,26 +246,49 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Latest News</h2>
+        <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">7-Day Forecast</h2>
+          <div className="grid grid-cols-7 gap-4">
+            {weatherData.forecast.forecastday.map((day, index) => (
+              <div key={index} className="text-center">
+                <p className="font-semibold">
+                  {new Date(day.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                  })}
+                </p>
+                {getWeatherIcon(day.day.condition.text)}
+                <p>
+                  H: {convertTemperature(day.day.maxtemp_f)}°
+                  {isCelsius ? "C" : "F"}
+                </p>
+                <p>
+                  L: {convertTemperature(day.day.mintemp_f)}°
+                  {isCelsius ? "C" : "F"}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">Top Weather Stories</h2>
           {newsData.length > 0 ? (
-            <ul className="list-disc pl-5">
-              {newsData.map((article, index) => (
-                <li key={index} className="mb-4">
+            <ul className="space-y-2">
+              {newsData.map((story, index) => (
+                <li key={index}>
                   <a
-                    href={article.url}
+                    href={story.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
-                    {article.title}
+                    {story.title}
                   </a>
-                  <p className="text-gray-600">{article.description}</p>
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No news available for the selected city.</p>
+            <p>No weather stories available at the moment.</p>
           )}
         </div>
       </main>
