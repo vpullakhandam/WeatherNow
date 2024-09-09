@@ -5,7 +5,7 @@ import { Input } from "./components/ui/input";
 import { Sun, Cloud, CloudRain, Wind, MapPin, Thermometer } from "lucide-react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 
 export default function Dashboard() {
   const [city, setCity] = useState("");
