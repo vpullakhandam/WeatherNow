@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const WEATHER_API_KEY = process.env.REACT_WEATHER_API_KEY;
-const NEWS_API_KEY = process.env.REACT_NEWS_API_KEY;
+const GNEWS_API_KEY = process.env.REACT_GNEWS_API_KEY;
 
 app.get("/api/weather", async (req, res) => {
   const { lat, lon, q } = req.query;
@@ -35,7 +35,7 @@ app.get("/api/news", async (req, res) => {
   const { city } = req.query;
   try {
     const response = await axios.get(
-      `https://newsapi.org/v2/everything?q=${city}+weather&apiKey=${NEWS_API_KEY}&pageSize=5`
+      `https://gnews.io/api/v4/search?q=${city}+weather&token=${GNEWS_API_KEY}&lang=en&max=5`
     );
     res.json(response.data);
   } catch (error) {

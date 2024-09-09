@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Sun, Cloud, CloudRain, Wind, MapPin, Newspaper, Clock, Umbrella, Calendar, Thermometer } from 'lucide-react'
+import { Sun, Cloud, CloudRain, Wind, MapPin, Newspaper, Clock, Umbrella, Calendar, Thermometer, AlertCircle } from 'lucide-react'
 import { Button } from "./components/ui/button"
+import { Input } from "./components/ui/input"
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function LandingPage() {
   const [currentWeather, setCurrentWeather] = useState('sunny')
+  const [isLoading, setIsLoading] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
+  const [city, setCity] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -24,24 +30,76 @@ export default function LandingPage() {
   }
 
   const handleGetStarted = () => {
+    setIsLoading(true)
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          setIsLoading(false)
           navigate(`/dashboard?lat=${latitude}&lon=${longitude}`);
         },
         (error) => {
+          setIsLoading(false)
           console.error("Error getting location:", error);
-          navigate('/dashboard');
-        }
+          let errorMessage = "Unable to retrieve your location. ";
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += "Please enable location services to use this feature.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "The request to get your location timed out.";
+              break;
+            default:
+              errorMessage += "An unknown error occurred.";
+          }
+          toast.error(errorMessage, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          setShowSearch(true);
+        },
+        { timeout: 10000 }
       );
     } else {
-      navigate('/dashboard');
+      setIsLoading(false)
+      toast.warn("Geolocation is not supported by your browser. Please enter a city name.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setShowSearch(true);
+    }
+  };
+
+  const handleCitySubmit = (e) => {
+    e.preventDefault();
+    if (city.trim()) {
+      navigate(`/dashboard?q=${encodeURIComponent(city.trim())}`);
+    } else {
+      toast.error("Please enter a valid city name.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
+      <ToastContainer />
       <section className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -59,12 +117,41 @@ export default function LandingPage() {
         >
           {weatherIcons[currentWeather]}
         </motion.div>
-        <Button 
-          className="text-lg px-6 py-3 rounded-full transform hover:scale-105"
-          onClick={handleGetStarted}
-        >
-          Get Started
-        </Button>
+        {!showSearch ? (
+          <Button 
+            className="text-lg px-6 py-3 rounded-full transform hover:scale-105 flex items-center"
+            onClick={handleGetStarted}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="animate-spin mr-2">
+                  <AlertCircle className="w-5 h-5" />
+                </span>
+                Loading...
+              </>
+            ) : (
+              'Get Started'
+            )}
+          </Button>
+        ) : (
+          <div className="w-full max-w-md">
+            <p className="text-xl mb-4 text-blue-700 font-semibold">Find out the weather in your favorite city!</p>
+            <form onSubmit={handleCitySubmit} className="flex items-center space-x-2">
+              <Input
+                type="text"
+                placeholder="Enter city name"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="flex-grow"
+              />
+              <Button type="submit">
+                <MapPin className="w-5 h-5 mr-2" />
+                Search
+              </Button>
+            </form>
+          </div>
+        )}
       </section>
 
       <section className="bg-white py-20">
