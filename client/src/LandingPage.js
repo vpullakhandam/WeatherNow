@@ -17,7 +17,6 @@ import {
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function LandingPage() {
   const [currentWeather, setCurrentWeather] = useState("sunny");
