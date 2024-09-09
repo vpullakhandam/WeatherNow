@@ -6,14 +6,15 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5004;
 
-app.use(
-  cors({
-    origin: "https://weathernow-frontend.vercel.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: "https://weathernow-frontend.vercel.app",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 app.use(express.json());
 
