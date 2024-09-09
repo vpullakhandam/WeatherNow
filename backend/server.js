@@ -6,12 +6,12 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5004;
 
-// app.use(
-//   cors({
-//     origin: "https://weathernow-frontend.vercel.app",
-//   })
-// );
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://weathernow-frontend.vercel.app",
+  })
+);
+
 app.use(express.json());
 
 const WEATHER_API_KEY = process.env.REACT_WEATHER_API_KEY;
