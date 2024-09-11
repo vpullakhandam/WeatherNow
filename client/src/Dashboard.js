@@ -7,6 +7,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const API_BASE_URL = 'https://weathernow-backend.vercel.app/api';
+
 export default function Dashboard() {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
@@ -35,7 +37,7 @@ export default function Dashboard() {
   const fetchWeatherData = async (lat, lon, q) => {
     setIsLoading(true);
     try {
-      let url = "http://localhost:5004/api/weather?";
+      let url = `${API_BASE_URL}/weather?`;
       if (lat && lon) {
         url += `lat=${lat}&lon=${lon}`;
       } else if (q) {
@@ -56,7 +58,7 @@ export default function Dashboard() {
   const fetchNewsData = async (city) => {
     try {
       const response = await axios.get(
-        `http://localhost:5004/api/news?city=${encodeURIComponent(city)}`
+        `${API_BASE_URL}/news?city=${encodeURIComponent(city)}`
       );
       setNewsData(response.data.articles);
     } catch (error) {
@@ -95,8 +97,7 @@ export default function Dashboard() {
     }
   };
 
-  const getWeatherRecommendation = (temp, condition) => {
-    const tempC = isCelsius ? temp : ((temp - 32) * 5) / 9;
+  const getWeatherRecommendation = (tempC, condition) => {
     if (tempC > 30)
       return "It's hot out there! Don't forget to stay hydrated and wear sunscreen.";
     if (tempC < 10) return "It's chilly today. Bundle up before heading out!";
@@ -111,11 +112,15 @@ export default function Dashboard() {
     setIsCelsius(!isCelsius);
   };
 
-  const convertTemperature = (temp) => {
+  const convertTemperature = (tempF) => {
     if (isCelsius) {
-      return (((temp - 32) * 5) / 9).toFixed(1);
+      return (((tempF - 32) * 5) / 9).toFixed(1);
     }
-    return temp.toFixed(1);
+    return tempF.toFixed(1);
+  };
+
+  const fahrenheitToCelsius = (tempF) => {
+    return ((tempF - 32) * 5) / 9;
   };
 
   if (isLoading) {
@@ -216,7 +221,7 @@ export default function Dashboard() {
               <p className="font-semibold">Recommendation:</p>
               <p>
                 {getWeatherRecommendation(
-                  weatherData.current.temp_f,
+                  fahrenheitToCelsius(weatherData.current.temp_f),
                   weatherData.current.condition.text
                 )}
               </p>
