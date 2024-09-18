@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_BASE_URL = 'https://weathernow-backend.vercel.app/api';
+const API_BASE_URL = "https://weathernow-backend.onrender.com";
 
 export default function Dashboard() {
   const [city, setCity] = useState("");
@@ -37,7 +37,7 @@ export default function Dashboard() {
   const fetchWeatherData = async (lat, lon, q) => {
     setIsLoading(true);
     try {
-      let url = `${API_BASE_URL}/weather?`;
+      let url = `${API_BASE_URL}/api/weather?`;
       if (lat && lon) {
         url += `lat=${lat}&lon=${lon}`;
       } else if (q) {
@@ -58,7 +58,7 @@ export default function Dashboard() {
   const fetchNewsData = async (city) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/news?city=${encodeURIComponent(city)}`
+        `${API_BASE_URL}/api/news?city=${encodeURIComponent(city)}`
       );
       setNewsData(response.data.articles);
     } catch (error) {
