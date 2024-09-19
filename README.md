@@ -66,7 +66,7 @@ WeatherNow is a full-stack weather application that provides real-time weather i
 1. Start the backend server:
    ```
    cd backend
-   npm start
+   node server.js
    ```
 
 2. In a new terminal, start the frontend development server:
